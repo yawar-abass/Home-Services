@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  Image,
+  Pressable,
+} from "react-native";
 import { fetchImageURL, getServiceProviders } from "../utils/auth";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
-const ServiceProviders = ({ route }) => {
+const ServiceProviders = ({ route, navigation }) => {
   const [serviceProviders, setServiceProviders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [providerImages, setProviderImages] = useState({}); // Use an object to store images for each provider
@@ -68,7 +75,17 @@ const ServiceProviders = ({ route }) => {
       ) : serviceProviders && serviceProviders.length > 0 ? (
         serviceProviders.map((provider, i) => {
           return (
-            <View key={i} style={styles.card}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("ServiceProviderDetails", {
+                  provider: provider,
+                  image: providerImages[provider.name],
+                })
+              }
+              key={i}
+              android_ripple={{ color: "#e6ebe7" }}
+              style={styles.card}
+            >
               <View>
                 <Image
                   source={{
@@ -84,7 +101,7 @@ const ServiceProviders = ({ route }) => {
                 <Text style={styles.price}>${provider.price}</Text>
                 <Text>{provider.rating} </Text>
               </View>
-            </View>
+            </Pressable>
           );
         })
       ) : (

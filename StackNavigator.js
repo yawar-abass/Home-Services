@@ -13,6 +13,8 @@ import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import ServiceProviders from "./screens/ServiceProviders";
+import ServiceProviderDetails from "./screens/ServiceProviderDetails";
+import ConfirmationScreen from "./screens/ConfirmationScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -85,6 +87,16 @@ function StackNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="ServiceProviders" component={ServiceProviders} />
+        <Stack.Screen
+          name="ServiceProviderDetails"
+          component={ServiceProviderDetails}
+          // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ConfirmationScreen"
+          component={ConfirmationScreen}
+          // options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

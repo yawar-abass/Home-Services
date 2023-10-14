@@ -5,7 +5,7 @@ import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { Alert } from "react-native";
 import { AuthContext } from "../store/auth-context";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase";
+import { auth, usersDb } from "../firebase";
 import { setDoc, doc } from "firebase/firestore";
 
 function SignupScreen({ navigation }) {
@@ -21,7 +21,7 @@ function SignupScreen({ navigation }) {
         const uid = auth.currentUser.uid;
 
         // Storing User Info
-        setDoc(doc(db, "users", `${uid}`), {
+        setDoc(doc(usersDb, "users", `${uid}`), {
           email: email,
           phone: phone,
           name: name,
