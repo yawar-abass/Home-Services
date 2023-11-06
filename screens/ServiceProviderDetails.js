@@ -8,8 +8,6 @@ import {
   TextInput,
 } from "react-native";
 import Button from "../components/ui/Button";
-import { auth, usersDb } from "../firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
 
 /* 
     issue -> One service can't be booked twice
@@ -18,39 +16,9 @@ import { collection, doc, setDoc } from "firebase/firestore";
 */
 
 const ServiceProviderDetails = ({ route, navigation }) => {
-  const [selectedDate, setSelectedDate] = useState("");
-  const { provider } = route.params;
   const { image } = route.params;
+  const { provider } = route.params;
 
-  const user = auth.currentUser;
-  // console.log(user);
-
-  const handleBookService = async () => {
-    try {
-      if (user) {
-        const userId = user.uid;
-        const bookingsRef = doc(
-          collection(usersDb, "users", `${userId}`, "bookings")
-        );
-        const bookingData = {
-          userId: userId,
-          selectedDate: selectedDate,
-          provider: provider,
-          // Add other booking details here as needed
-        };
-
-        await setDoc(bookingsRef, bookingData, { merge: true });
-
-        navigation.navigate("ConfirmationScreen");
-      } else {
-        // Handle the case where the user is not authenticated
-        console.error("User is not authenticated.");
-      }
-    } catch (error) {
-      console.error("Error booking service:", error);
-    }
-  };
-  // console.log(provider);
   return (
     <SafeAreaView>
       <Image
@@ -63,12 +31,12 @@ const ServiceProviderDetails = ({ route, navigation }) => {
       <Text> {provider.name}</Text>
       <Text> {provider.contact}</Text>
       <Text> {provider.name}</Text>
-      <TextInput
-        placeholder="Select Date"
-        value={selectedDate}
-        onChangeText={(text) => setSelectedDate(text)}
-      />
-      <Button onPress={handleBookService} style={styles.button}>
+      <Text> Need to show the reviews as well</Text>
+
+      <Button
+        onPress={() => navigation.navigate("ConfirmationScreen", { provider })}
+        style={styles.button}
+      >
         Book Now
       </Button>
     </SafeAreaView>

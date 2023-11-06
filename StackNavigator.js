@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ServiceProviders from "./screens/ServiceProviders";
 import ServiceProviderDetails from "./screens/ServiceProviderDetails";
 import ConfirmationScreen from "./screens/ConfirmationScreen";
+import ThankyouScreen from "./screens/ThankyouScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -96,6 +97,11 @@ function StackNavigator() {
           name="ConfirmationScreen"
           component={ConfirmationScreen}
           // options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ThankyouScreen"
+          component={ThankyouScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
