@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,75 +6,92 @@ import {
   Text,
   Dimensions,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { Colors, globalStyle } from "../../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-const RecomendedServices = () => {
+const RecomendedServices = ({ serviceProviders, providerImages }) => {
   const width = Dimensions.get("window").width;
-  const data = [
-    {
-      serviceName: "Ac Service",
-      serviceProvider: "Jhone Doe",
-      price: "234",
-      image: require("../../assets/demo.png"),
-    },
-    {
-      serviceName: "House clean",
-      serviceProvider: "Jhone Doe",
-      price: "234",
-      image: require("../../assets/demo.png"),
-    },
-    {
-      serviceName: "Plumber",
-      serviceProvider: "Jhone Doe",
-      price: "234",
-      image: require("../../assets/demo.png"),
-    },
-  ];
+  const navigation = useNavigation();
 
+  // console.log(serviceProviders);
+
+  // const service = serviceName.toLowerCase();
   return (
-    <View style>
+    <>
       <Text style={[globalStyle.title, { paddingLeft: 20 }]}>
         Most booked services
       </Text>
-      {/* Service Card  */}
+
       <ScrollView
         horizontal={true}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         style={{ marginLeft: 12 }}
       >
-        {data.map((item, i) => {
-          return (
-            <View style={styles.serviceCard} key={i}>
-              <Image style={styles.image} source={item.image} />
-              <Text style={styles.servName}>{item.serviceName}</Text>
-              <Text style={styles.servProvd}>{item.serviceProvider}</Text>
-              <Text style={styles.rating}>
-                {" "}
-                <Ionicons
-                  name="star"
-                  size={19}
-                  color="gold"
-                  style={{ padding: 3, paddingRight: 8 }}
-                />
-                4.8{"  "}
-                <Text style={{ color: Colors.primary500 }}>(110 Reviews)</Text>
-              </Text>
+        {serviceProviders && serviceProviders.length > 0 ? (
+          serviceProviders.slice(0, 3).map((provider, i) => {
+            return (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("ServiceProviderDetails", {
+                    provider: provider,
+                    image: providerImages[provider.name],
+                  })
+                }
+                key={i}
+                style={styles.card}
+              >
+                <View style={styles.serviceCard} key={i}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: providerImages[provider.name],
+                    }}
+                  />
+                  <Text style={styles.servName}>
+                    {provider.cleaning ??
+                      provider.plumbing ??
+                      provider.painting ??
+                      provider.repairing ??
+                      "Cleaning"}
+                  </Text>
+                  <Text style={styles.servProvd}>{provider.name}</Text>
+                  <Text style={styles.rating}>
+                    <Ionicons
+                      name="star"
+                      size={19}
+                      color="gold"
+                      style={{ padding: 3, paddingRight: 8 }}
+                    />
+                    {provider.rating}
+                    {"  "}
+                    <Text style={{ color: Colors.primary500 }}>
+                      (110 Reviews)
+                    </Text>
+                  </Text>
 
-              <Text style={styles.price}>${item.price}</Text>
-            </View>
-          );
-        })}
+                  <Text style={styles.price}>${provider.price}</Text>
+                </View>
+              </Pressable>
+            );
+          })
+        ) : (
+          <View>
+            <Text>These Services can't be provided at your location</Text>
+          </View>
+        )}
       </ScrollView>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   image: {
-    height: 90,
+    height: 110,
     width: 180,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,

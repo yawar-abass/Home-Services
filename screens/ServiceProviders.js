@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,9 +6,12 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
+  SafeAreaView,
 } from "react-native";
-import { fetchImageURL, getServiceProviders } from "../utils/auth";
+import { fetchImageURL, getServiceProviders } from "../utils/helper";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Colors } from "../constants/styles";
 
 const ServiceProviders = ({ route, navigation }) => {
   const [serviceProviders, setServiceProviders] = useState([]);
@@ -18,6 +21,14 @@ const ServiceProviders = ({ route, navigation }) => {
   const { serviceName } = route.params;
   const storage = getStorage();
 
+  // Changing the header title
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: serviceName,
+    });
+  }, [navigation]);
+
+  //get Service Providers
   useEffect(() => {
     async function getDetails() {
       try {
@@ -43,6 +54,7 @@ const ServiceProviders = ({ route, navigation }) => {
     getDetails();
   }, [serviceName]);
 
+  //getting the url of the images that are stored at firebase storage
   useEffect(() => {
     async function loadImages() {
       const imagePromises = serviceProviders.map(async (provider) => {
@@ -66,10 +78,9 @@ const ServiceProviders = ({ route, navigation }) => {
       loadImages();
     }
   }, [serviceProviders, storage]);
-
+  const service = serviceName.toLowerCase();
   return (
-    <View>
-      <Text>Services Provided</Text>
+    <SafeAreaView>
       {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : serviceProviders && serviceProviders.length > 0 ? (
@@ -80,6 +91,8 @@ const ServiceProviders = ({ route, navigation }) => {
                 navigation.navigate("ServiceProviderDetails", {
                   provider: provider,
                   image: providerImages[provider.name],
+                  service: provider[service], // service name provided by the provider
+                  serviceName: serviceName, // this is the service category
                 })
               }
               key={i}
@@ -96,10 +109,22 @@ const ServiceProviders = ({ route, navigation }) => {
               </View>
               <View style={styles.details}>
                 <Text style={styles.name}>{provider.name}</Text>
-                <Text style={styles.service}>{serviceName}</Text>
+                <Text style={styles.service}>{provider[service]}</Text>
                 {/* <Text>{provider.contact}</Text> */}
                 <Text style={styles.price}>${provider.price}</Text>
-                <Text>{provider.rating} </Text>
+                <Text style={styles.rating}>
+                  <Ionicons
+                    name="star"
+                    size={19}
+                    color="gold"
+                    style={{ padding: 3, paddingRight: 8 }}
+                  />
+                  {provider.rating}
+                  {"  "}
+                  <Text style={{ color: Colors.primary500, fontSize: 15 }}>
+                    (110 Reviews)
+                  </Text>
+                </Text>
               </View>
             </Pressable>
           );
@@ -109,7 +134,7 @@ const ServiceProviders = ({ route, navigation }) => {
           <Text>These Services can't be provided at your location</Text>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -129,7 +154,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   name: {
-    fontSize: 18,
+    fontSize: 20,
     // fontWeight: "500",
   },
   details: {
@@ -142,8 +167,15 @@ const styles = StyleSheet.create({
   },
   price: {
     color: "darkgreen",
-    fontSize: 17,
-    paddingVertical: 12,
+    fontSize: 20,
+    paddingVertical: 5,
+  },
+  rating: {
+    // padding: 2,
+    color: "#FF9529",
+    flex: 1,
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });
 

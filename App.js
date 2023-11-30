@@ -5,20 +5,29 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SplashScreen from "expo-splash-screen";
 import { View } from "react-native";
 import StackNavigator from "./StackNavigator";
+import { getAuth } from "firebase/auth";
 
-function Root() {
+SplashScreen.preventAutoHideAsync();
+
+function Root({ navigation }) {
   const [appIsReady, setAppIsReady] = useState(false);
+  const [authUser, setAuthUser] = useState(false);
+
   const authCtx = useContext(AuthContext);
+  const auth = getAuth();
+  const uid = authCtx.uid;
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const storedToken = await AsyncStorage.getItem("uid");
-      if (storedToken) {
-        authCtx.authenticate(storedToken);
+    async function prepare() {
+      const uid = await AsyncStorage.getItem("uid");
+
+      if (uid) {
+        setAuthUser(true);
+        setAppIsReady(true);
       }
       setAppIsReady(true);
-    };
-    fetchToken();
+    }
+    prepare();
   }, []);
 
   const onLayoutRootView = useCallback(async () => {
@@ -38,7 +47,7 @@ function Root() {
       }}
       onLayout={onLayoutRootView}
     >
-      <StackNavigator />
+      <StackNavigator authUser={authUser} />
     </View>
   );
 }

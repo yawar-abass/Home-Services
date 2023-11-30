@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Button,
   Alert,
+  Modal,
 } from "react-native";
 import { auth, database, usersDb } from "../firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
@@ -14,14 +15,24 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Pressable } from "react-native";
 import { Colors } from "../constants/styles";
 import { getDatabase, ref, child, push, update } from "firebase/database";
+import LocationPicker from "../components/Address/LocationPicker";
+import { ScrollView } from "react-native-gesture-handler";
 
 const ConfirmationScreen = ({ route, navigation }) => {
   const { provider } = route.params;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Booking Details",
+    });
+  }, [navigation]);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [location, setLocation] = useState("");
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
@@ -73,6 +84,7 @@ const ConfirmationScreen = ({ route, navigation }) => {
 
   const handleBookService = async () => {
     try {
+      setIsLoading(true);
       if (user) {
         if (provider.bookedDate === date.toLocaleDateString()) {
           return Alert.alert(
@@ -85,6 +97,7 @@ const ConfirmationScreen = ({ route, navigation }) => {
         const bookingsRef = doc(
           collection(usersDb, "users", `${userId}`, "bookings")
         );
+
         const bookingData = {
           userId: userId,
           provider: provider,
@@ -103,69 +116,87 @@ const ConfirmationScreen = ({ route, navigation }) => {
 
         await setDoc(bookingsRef, bookingData, { merge: true });
 
+        setIsLoading(false);
         navigation.navigate("ThankyouScreen");
       } else {
         // Handle the case where the user is not authenticated
+        setIsLoading(false);
         console.error("User is not authenticated.");
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Error booking service:", error);
     }
   };
 
   return (
     <SafeAreaView style={styles.root}>
-      <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-        onPress={showDatepicker}
-      >
-        <View style={{}}>
-          <Text style={styles.dateText}>Select the booking date: </Text>
-          <Text style={styles.sDate}>{date.toLocaleDateString()}</Text>
-        </View>
-      </Pressable>
+      <ScrollView>
+        <Pressable
+          style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+          onPress={showDatepicker}
+        >
+          <View style={{}}>
+            <Text style={styles.dateText}>Select the booking date: </Text>
+            <Text style={styles.sDate}>{date.toLocaleDateString()}</Text>
+          </View>
+        </Pressable>
 
-      <Pressable
-        style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-        onPress={showTimepicker}
-      >
-        <View style={{}}>
-          <Text style={styles.dateText}>Select the booking time: </Text>
-          <Text style={styles.sDate}>{date.toLocaleTimeString()}</Text>
-        </View>
-      </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+          onPress={showTimepicker}
+        >
+          <View style={{}}>
+            <Text style={styles.dateText}>Select the booking time: </Text>
+            <Text style={styles.sDate}>{date.toLocaleTimeString()}</Text>
+          </View>
+        </Pressable>
 
-      <TextInput
-        style={styles.input}
-        onChangeText={handleLocation}
-        value={location}
-        placeholder="Enter location (e.g. H No., Locality , City)"
-      />
-
-      <Text style={styles.resultText}>
-        Selected Date, Time: {date.toLocaleString()}
-      </Text>
-      <Text style={styles.resultText}>
-        Selected Location: {location === "" ? "No location selected" : location}
-      </Text>
-
-      <Button
-        onPress={handleBookService}
-        title="Confirm Booking"
-        disabled={location.length > 0 ? false : true}
-      />
-
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          // is24Hour={true}
-          minimumDate={date}
-          onChange={onChange}
-          style={{ flex: 1, width: "100vw", backgroundColor: "blue" }}
+        <Pressable
+          style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+          onPress={() => setModalVisible(true)}
+        >
+          <View style={{}}>
+            <Text style={styles.dateText}>Select the booking location : </Text>
+            <Text style={styles.sDate}>
+              {location === "" ? "No location selected" : location}
+            </Text>
+          </View>
+        </Pressable>
+        <LocationPicker
+          onSelectLocation={handleLocation}
+          isModalVisible={isModalVisible}
+          closeModal={() => setModalVisible(false)}
         />
-      )}
+
+        <Text style={styles.resultText}>
+          Selected Date, Time: {date.toLocaleString()}
+        </Text>
+        <Text style={styles.resultText}>
+          Selected Location:{" "}
+          {location === "" ? "No location selected" : location}
+        </Text>
+
+        <View style={styles.btn}>
+          <Button
+            onPress={handleBookService}
+            title={isLoading ? "Confirming Booking..." : "Confirm Booking"}
+            disabled={location.length > 0 ? false : true}
+          />
+        </View>
+
+        {show && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={mode}
+            // is24Hour={true}
+            minimumDate={date}
+            onChange={onChange}
+            style={{ flex: 1, width: "100vw", backgroundColor: "blue" }}
+          />
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -223,6 +254,19 @@ const styles = StyleSheet.create({
     height: 80,
     elevation: 3,
     backgroundColor: "white",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    marginBottom: 58,
+  },
+
+  btn: {
+    margin: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

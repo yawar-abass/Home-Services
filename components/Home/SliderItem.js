@@ -7,10 +7,13 @@ import {
   Pressable,
 } from "react-native";
 import { Colors } from "../../constants/styles";
+import { useNavigation } from "@react-navigation/native";
 
 const SliderItem = ({ title, bgImage, desc }) => {
+  const navigation = useNavigation();
+
   function bookNowhandler() {
-    console.log("booked");
+    navigation.navigate("Services");
   }
   return (
     <View style={styles.card}>
@@ -73,22 +76,23 @@ const styles = StyleSheet.create({
   },
   overlay: {
     height: 195,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
     paddingVertical: 22,
     borderRadius: 10,
   },
   text: {
-    fontSize: 26,
+    fontSize: 27,
     color: "white",
     paddingLeft: 13,
-    paddingRight: 99,
-    fontWeight: "500",
+    paddingRight: 90,
+    fontWeight: "600",
   },
   desc: {
-    fontSize: 17,
-    color: "#D0D0D0",
+    fontSize: 16,
+    color: "lightgray",
     paddingVertical: 8,
     paddingHorizontal: 13,
+    fontWeight: "500",
   },
   image: {
     // flex: 1,

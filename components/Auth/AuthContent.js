@@ -80,6 +80,13 @@ function AuthContent({ isLogin, onAuthenticate }) {
             {isLogin ? "Register" : "Login "}
           </FlatButton>
         </View>
+        {isLogin && (
+          <View style={styles.buttons}>
+            <FlatButton onPress={() => navigation.navigate("ForgotPassword")}>
+              Forgot the Password?
+            </FlatButton>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

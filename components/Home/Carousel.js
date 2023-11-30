@@ -6,19 +6,19 @@ import SliderItem from "./SliderItem";
 const MainSlider = () => {
   const data = [
     {
-      title: "Laptop repair at your home",
-      desc: "Repair at home",
-      bgImage: require("../../assets/demo.png"),
+      title: "Revamp Your Home, Save Big",
+      desc: "Unbeatable Limited Time Offer!",
+      bgImage: require("../../assets/services/banner1.png"),
     },
     {
-      title: "Slider two content goes here",
-      desc: "Repair at home",
-      bgImage: require("../../assets/slider2.jpg"),
+      title: "HomeCare Made Simple",
+      desc: "Efficient Solutions for Everything",
+      bgImage: require("../../assets/services/banner2.jpg"),
     },
     {
-      title: "Slider three here",
-      desc: "Repair at home",
-      bgImage: require("../../assets/demo.png"),
+      title: "Expert Service Solutions",
+      desc: "Skilled, Quick Solutions",
+      bgImage: require("../../assets/services/banner3.jpeg"),
     },
   ];
 
@@ -29,10 +29,10 @@ const MainSlider = () => {
         loop
         width={width}
         height={width / 2}
-        // autoPlay={true}
+        autoPlay={true}
+        autoPlayInterval={5000}
         data={data}
         scrollAnimationDuration={1000}
-        onSnapToItem={(index) => console.log("current index:", index)}
         renderItem={({ item, index }) => (
           <SliderItem
             title={item.title}

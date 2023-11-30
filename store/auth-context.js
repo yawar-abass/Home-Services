@@ -8,15 +8,16 @@ export const AuthContext = createContext({
   isAuthenticated: false,
   authenticate: (token) => {},
   logout: () => {},
+  userData: {},
 });
 
 function AuthContextProvider({ children }) {
   const [authToken, setAuthToken] = useState();
   const [uid, setUid] = useState();
+  const [userData, setUserData] = useState();
 
   function authenticate(token) {
     setAuthToken(token);
-
     // AsyncStorage.setItem("token", token);
   }
 
@@ -30,13 +31,19 @@ function AuthContextProvider({ children }) {
     AsyncStorage.removeItem("token");
   }
 
+  function userProfile(data) {
+    setUserData(data);
+  }
+
   const value = {
     uid: uid,
     token: authToken,
     isAuthenticated: !!authToken,
+    userData: userData,
     authenticate: authenticate,
     logout: logout,
     storeUid: storeUid,
+    userProfile: userProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

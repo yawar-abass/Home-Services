@@ -16,6 +16,11 @@ import ServiceProviders from "./screens/ServiceProviders";
 import ServiceProviderDetails from "./screens/ServiceProviderDetails";
 import ConfirmationScreen from "./screens/ConfirmationScreen";
 import ThankyouScreen from "./screens/ThankyouScreen";
+import NotificationsScreen from "./screens/NotificationsScreen";
+import ServicesScreen from "./screens/ServicesScreen";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import BookingsScreen from "./screens/BookingsScreen";
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,11 +31,11 @@ function BottomTabs() {
         name="Home"
         component={WelcomeScreen}
         options={{
-          tabBarLabel: () => {
-            return null;
-          },
+          // tabBarLabel: () => {
+          //   return null;
+          // },
           tabBarLabelStyle: { color: "black" },
-          // headerShown: false,
+          headerShown: false,
           tabBarIcon: ({ focused }) =>
             focused ? (
               <Entypo name="home" size={24} color="black" />
@@ -39,13 +44,56 @@ function BottomTabs() {
             ),
         }}
       />
+
       <Tab.Screen
-        name="User"
+        name="Services"
+        component={ServicesScreen}
+        options={{
+          // tabBarLabel: () => {
+          //   return null;
+          // },
+          tabBarLabelStyle: { color: "black" },
+          // headerShown: false,
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <MaterialCommunityIcons
+                name="room-service"
+                size={24}
+                color="black"
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="room-service-outline"
+                size={24}
+                color="black"
+              />
+            ),
+        }}
+      />
+      <Tab.Screen
+        name="Bookings"
+        component={BookingsScreen}
+        options={{
+          // tabBarLabel: () => {
+          //   return null;
+          // },
+          tabBarLabelStyle: { color: "black" },
+          // headerShown: false,
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <Entypo name="book" size={24} color="black" />
+            ) : (
+              <AntDesign name="book" size={24} color="black" />
+            ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
         component={UserScreen}
         options={{
-          tabBarLabel: () => {
-            return null;
-          },
+          // tabBarLabel: () => {
+          //   return null;
+          // },
           tabBarLabelStyle: { color: "black" },
           // headerShown: false,
           tabBarIcon: ({ focused }) =>
@@ -62,7 +110,7 @@ function BottomTabs() {
 
 const Stack = createStackNavigator();
 
-function StackNavigator() {
+function StackNavigator({ authUser }) {
   const authCtx = useContext(AuthContext);
   return (
     <NavigationContainer>
@@ -75,34 +123,91 @@ function StackNavigator() {
           }
         }
       >
-        <Stack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-          component={LoginScreen}
-        />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-
-        <Stack.Screen
-          name="Main"
-          component={BottomTabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="ServiceProviders" component={ServiceProviders} />
-        <Stack.Screen
-          name="ServiceProviderDetails"
-          component={ServiceProviderDetails}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ConfirmationScreen"
-          component={ConfirmationScreen}
-          // options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="ThankyouScreen"
-          component={ThankyouScreen}
-          options={{ headerShown: false }}
-        />
+        {!authUser ? (
+          <>
+            <Stack.Screen
+              name="Login"
+              options={{ headerShown: false }}
+              component={LoginScreen}
+            />
+            <Stack.Screen name="Signup" component={SignupScreen} />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+            />
+            <Stack.Screen
+              name="Main"
+              component={BottomTabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ServiceProviders"
+              component={ServiceProviders}
+            />
+            <Stack.Screen
+              name="ServiceProviderDetails"
+              component={ServiceProviderDetails}
+              options={{ title: "Details" }}
+            />
+            <Stack.Screen
+              name="ConfirmationScreen"
+              component={ConfirmationScreen}
+              // options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ThankyouScreen"
+              component={ThankyouScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+              // options={{ headerShown: false }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Main"
+              component={BottomTabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ServiceProviders"
+              component={ServiceProviders}
+            />
+            <Stack.Screen
+              name="ServiceProviderDetails"
+              component={ServiceProviderDetails}
+              options={{ title: "Details" }}
+            />
+            <Stack.Screen
+              name="ConfirmationScreen"
+              component={ConfirmationScreen}
+              // options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ThankyouScreen"
+              component={ThankyouScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+              // options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              options={{ headerShown: false }}
+              component={LoginScreen}
+            />
+            <Stack.Screen name="Signup" component={SignupScreen} />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

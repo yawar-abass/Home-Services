@@ -1,59 +1,76 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AuthContent from "../components/Auth/AuthContent";
-import { login } from "../utils/auth";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { Alert } from "react-native";
 import { AuthContext } from "../store/auth-context";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 
 function LoginScreen({ navigation }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const authCtx = useContext(AuthContext);
   const auth = getAuth();
 
-  useEffect(() => {
-    try {
-      const unsubscribe = auth.onAuthStateChanged((authUser) => {
-        if (authUser) {
-          // Reset the navigation stack to the Home screen
-          navigation.replace("Main");
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          });
-        }
-      });
+  const isEmailVerified = () => {
+    const user = getAuth().currentUser;
+    return user && user.emailVerified;
+  };
 
-      return unsubscribe;
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
+  const redirectToMainScreen = () => {
+    navigation.replace("Main");
+  };
+
+  // Automatically redirect if the user is already authenticated and their email is verified
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user && isEmailVerified()) {
+        redirectToMainScreen();
+      }
+    });
+
+    return unsubscribe;
+  }, [auth]);
 
   async function loginHandler({ email, password }) {
-    setIsAuthenticating(true);
+    try {
+      setIsAuthenticating(true);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Logged in
-        const user = userCredential._tokenResponse.email;
-        const uid = auth.currentUser.uid;
-        authCtx.storeUid(uid);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Alert.alert(
-          "Authentication failed",
-          "Could not log you in. login Please check your credentails or try again later!"
-        );
-        setIsAuthenticating(false);
-      });
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Check if the user's email is verified
+      if (user && isEmailVerified()) {
+        authCtx.isAuthenticated = true;
+        await authCtx.storeUid(user?.uid);
+      } else {
+        // If not verified, send another email verification
+        await sendEmailVerification(user);
+        Alert.alert("Verify Email", "Please check your email for verification");
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      Alert.alert(
+        "Authentication failed",
+        "Could not log you in. Please check your credentials or try again later!"
+      );
+    } finally {
+      setIsAuthenticating(false);
+    }
   }
 
   if (isAuthenticating) {
-    return <LoadingOverlay message="Loggin User in..." />;
+    return <LoadingOverlay message="Logging User in..." />;
   }
+
   return <AuthContent isLogin onAuthenticate={loginHandler} />;
 }
 

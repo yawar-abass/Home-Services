@@ -31,8 +31,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", // Background color for the search bar
     borderRadius: 8,
     paddingHorizontal: 16, // Add horizontal padding to the search bar
-    borderWidth: 1,
-    borderColor: "#ccc",
+    // borderWidth: 1,
+    // borderColor: "#ccc",
+    elevation: 3,
     marginBottom: 22,
     marginHorizontal: 20,
   },

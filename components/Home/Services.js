@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Services = () => {
   const navigation = useNavigation();
@@ -25,23 +26,45 @@ const Services = () => {
     {
       id: 3,
       name: "Painting",
-      image: require("../../assets/services/clean.png"),
+      image: require("../../assets/services/painter.png"),
     },
     {
       id: 4,
       name: "Carpenter",
-      image: require("../../assets/services/clean.png"),
+      image: require("../../assets/services/carpenter.png"),
     },
     {
       id: 5,
       name: "Electrician",
-      image: require("../../assets/services/clean.png"),
+      image: require("../../assets/services/electrician.png"),
     },
   ];
 
   return (
     <View style={styles.rootContainer}>
-      <Text style={styles.title}>Services</Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          marginVertical: 10,
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={styles.title}>Popular Services</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Services")}>
+          <Text
+            style={{
+              marginTop: 3,
+              fontSize: 16,
+              fontWeight: "500",
+              color: Colors.primary100,
+              paddingRight: 15,
+            }}
+          >
+            See All
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.servicesContainer}>
         {services.map((service) => {
@@ -76,7 +99,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "600",
-    marginVertical: 10,
   },
   servicesContainer: {
     flexDirection: "row",
