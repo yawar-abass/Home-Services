@@ -12,9 +12,9 @@ import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDv8PIPVCsDUmMSWDH_Iqd4rtll7Jwn1FE",
+  apiKey: process.env.FIREBASE_API_KEY,
   authDomain: "login-9c0eb.firebaseapp.com",
-  databaseURL: "https://login-9c0eb-default-rtdb.firebaseio.com",
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
   projectId: "login-9c0eb",
   storageBucket: "login-9c0eb.appspot.com",
   messagingSenderId: "743345924157",

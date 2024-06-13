@@ -1,8 +1,6 @@
 import axios from "axios";
 import { getDatabase, ref, child, get } from "firebase/database";
 
-const API_KEY = "AIzaSyDv8PIPVCsDUmMSWDH_Iqd4rtll7Jwn1FE";
-
 export async function fetchImageURL(starsRef) {
   try {
     const url = await getDownloadURL(starsRef);
@@ -48,7 +46,7 @@ export async function getServiceProviders() {
 }
 
 async function authenticate(mode, email, password) {
-  const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${API_KEY}`;
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${process.env.FIREBASE_API_KEY}`;
   const response = await axios.post(url, {
     email: email,
     password: password,
